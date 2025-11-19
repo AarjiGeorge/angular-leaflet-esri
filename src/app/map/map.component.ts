@@ -12,8 +12,8 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   private map!: L.Map;
   private markersLayer!: L.LayerGroup;
 
-  // ESRI Service Configuration - Vector Tile Service (4326 version)
-  private readonly esriVectorUrl = 'https://geotrans.itc.gov.ae/server/rest/services/Hosted/StreetMap_4326_Vector_Y_EN/VectorTileServer';
+  // ESRI Service Configuration - Vector Tile Service (3857 version)
+  private readonly esriVectorUrl = 'https://geotrans.itc.gov.ae/server/rest/services/Hosted/StreetMap_3857_Vector_Y_EN/VectorTileServer';
   private readonly esriToken = 'OOAaWoN3772PFjfCsqBuYRfRIbajgQsJEE3HKznr73STKWx_9nKBbm27vfrQsI1rW-qxdJ7P4Whe17NXoGtQruRShshij09xMcwN01LAotc9S_6VlorCKAJIZjhQZaiRWBFKIknJWnBrUDM1qwZTFCq4vEOcGkftCWdkwzvWH1zoJkEOr_-HKPQK7lIb7Xtj';
 
   // Default center coordinates (Abu Dhabi area)
@@ -35,15 +35,13 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private initializeMap(): void {
-    // Create the map with EPSG:4326 CRS to match the 4326 vector tile service
+    // Create the map with default Web Mercator CRS
     this.map = L.map('map', {
       center: this.defaultCenter,
       zoom: this.defaultZoom,
       zoomControl: true,
       minZoom: 3,
       maxZoom: 18,
-      // Use EPSG:4326 (WGS84) CRS for 4326 tile service
-      crs: L.CRS.EPSG4326,
       // Force integer zoom levels to match service LODs
       zoomSnap: 1,
       zoomDelta: 1
