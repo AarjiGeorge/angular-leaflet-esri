@@ -10,6 +10,7 @@ import * as esriVector from 'esri-leaflet-vector';
 })
 export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   private map!: L.Map;
+  private markersLayer!: L.LayerGroup;
 
   // ESRI Service Configuration - Vector Tile Service
   private readonly esriVectorUrl = 'https://geotrans.itc.gov.ae/server/rest/services/Hosted/StreetMap_3857_Vector_Y_EN/VectorTileServer';
@@ -68,6 +69,49 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Add attribution
     this.map.attributionControl.addAttribution('Map data &copy; <a href="https://geotrans.itc.gov.ae">ITC GeoTrans</a>');
+
+    // Create markers layer group and add to map
+    this.markersLayer = L.layerGroup().addTo(this.map);
+  }
+
+  // Get the markers layer group
+  getMarkersLayer(): L.LayerGroup {
+    return this.markersLayer;
+  }
+
+  // Add a marker to the markers layer
+  addMarker(lat: number, lng: number, options?: L.MarkerOptions): L.Marker {
+    const marker = L.marker([lat, lng], options);
+    this.markersLayer.addLayer(marker);
+    return marker;
+  }
+
+  // Add a marker with popup
+  addMarkerWithPopup(lat: number, lng: number, popupContent: string, options?: L.MarkerOptions): L.Marker {
+    const marker = this.addMarker(lat, lng, options);
+    marker.bindPopup(popupContent);
+    return marker;
+  }
+
+  // Remove a specific marker from the layer
+  removeMarker(marker: L.Marker): void {
+    this.markersLayer.removeLayer(marker);
+  }
+
+  // Clear all markers from the layer
+  clearMarkers(): void {
+    this.markersLayer.clearLayers();
+  }
+
+  // Get all markers in the layer
+  getMarkers(): L.Marker[] {
+    const markers: L.Marker[] = [];
+    this.markersLayer.eachLayer((layer) => {
+      if (layer instanceof L.Marker) {
+        markers.push(layer);
+      }
+    });
+    return markers;
   }
 
   // Public method to get map instance
