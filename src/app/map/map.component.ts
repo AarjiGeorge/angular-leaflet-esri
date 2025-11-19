@@ -35,13 +35,15 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private initializeMap(): void {
-    // Create the map with constrained zoom levels to match service LODs
+    // Create the map with EPSG:4326 CRS to match the 4326 vector tile service
     this.map = L.map('map', {
       center: this.defaultCenter,
       zoom: this.defaultZoom,
       zoomControl: true,
       minZoom: 3,
       maxZoom: 18,
+      // Use EPSG:4326 (WGS84) CRS for 4326 tile service
+      crs: L.CRS.EPSG4326,
       // Force integer zoom levels to match service LODs
       zoomSnap: 1,
       zoomDelta: 1
