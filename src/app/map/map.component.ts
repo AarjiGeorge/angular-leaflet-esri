@@ -15,9 +15,10 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly esriMapServerUrl = 'https://geotrans.itc.gov.ae/server/rest/services/Basemaps/StreetMap_3857_Raster_Y_EN/MapServer';
   private readonly esriToken = 'OOAaWoN3772PFjfCsqBuYRfRIbajgQsJEE3HKznr73STKWx_9nKBbm27vfrQsI1rW-qxdJ7P4Whe17NXoGtQruRShshij09xMcwN01LAotc9S_6VlorCKAJIZjhQZaiRWBFKIknJWnBrUDM1qwZTFCq4vEOcGkftCWdkwzvWH1zoJkEOr_-HKPQK7lIb7Xtj';
 
-  // Default center coordinates (Abu Dhabi area)
+  // Default center coordinates (Abu Dhabi area - within service extent)
   private readonly defaultCenter: L.LatLngExpression = [24.4539, 54.3773];
-  private readonly defaultZoom = 12;
+  // Use zoom level 6 which maps to service LOD level around 300000 scale
+  private readonly defaultZoom = 6;
 
   ngOnInit(): void {
     // Component initialization
@@ -34,20 +35,26 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private initializeMap(): void {
-    // Create the map
+    // Create the map with bounds limited to UAE region
     this.map = L.map('map', {
       center: this.defaultCenter,
       zoom: this.defaultZoom,
-      zoomControl: true
+      zoomControl: true,
+      // Set min/max zoom based on service LODs (0-25)
+      minZoom: 0,
+      maxZoom: 25
     });
 
     // Add ESRI TiledMapLayer with token authentication
     const esriTiledLayer = (esri as any).tiledMapLayer({
       url: this.esriMapServerUrl,
       token: this.esriToken,
-      maxZoom: 18,
-      minZoom: 1,
-      useCors: true
+      // Let esri-leaflet handle zoom levels from service metadata
+      useCors: true,
+      // Add crossOrigin for CORS
+      tileOptions: {
+        crossOrigin: 'anonymous'
+      }
     });
 
     esriTiledLayer.addTo(this.map);
