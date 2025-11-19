@@ -46,14 +46,37 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       url: this.esriMapServerUrl,
       token: this.esriToken,
       maxZoom: 18,
-      minZoom: 1
+      minZoom: 1,
+      useCors: true
     });
 
     esriTiledLayer.addTo(this.map);
 
+    // Add loading event handlers
+    esriTiledLayer.on('loading', () => {
+      console.log('Loading tiles...');
+    });
+
+    esriTiledLayer.on('load', () => {
+      console.log('Tiles loaded successfully');
+    });
+
     // Add error handling for the layer
     esriTiledLayer.on('tileerror', (error: any) => {
       console.error('Tile loading error:', error);
+      // Log the tile URL for debugging
+      if (error.tile && error.tile.src) {
+        console.error('Failed tile URL:', error.tile.src);
+      }
+    });
+
+    // Get metadata to verify service connection
+    esriTiledLayer.metadata((error: any, metadata: any) => {
+      if (error) {
+        console.error('Failed to get service metadata:', error);
+      } else {
+        console.log('Service metadata:', metadata);
+      }
     });
 
     // Add scale control
