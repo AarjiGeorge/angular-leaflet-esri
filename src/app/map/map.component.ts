@@ -1,10 +1,12 @@
 import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import * as L from 'leaflet';
 import * as esriVector from 'esri-leaflet-vector';
 
 @Component({
   selector: 'app-map',
   standalone: true,
+  imports: [RouterLink],
   templateUrl: './map.component.html',
   styleUrl: './map.component.css'
 })
@@ -14,7 +16,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // ESRI Service Configuration - Vector Tile Service (3857 version)
   private readonly esriVectorUrl = 'https://geotrans.itc.gov.ae/server/rest/services/Hosted/StreetMap_3857_Vector_Y_EN/VectorTileServer';
-  private readonly esriToken = 'OOAaWoN3772PFjfCsqBuYRfRIbajgQsJEE3HKznr73STKWx_9nKBbm27vfrQsI1rW-qxdJ7P4Whe17NXoGtQruRShshij09xMcwN01LAotc9S_6VlorCKAJIZjhQZaiRWBFKIknJWnBrUDM1qwZTFCq4vEOcGkftCWdkwzvWH1zoJkEOr_-HKPQK7lIb7Xtj';
+  private readonly esriToken = 'mIDXSz_8ZTzhEckOc4H8oTdsYqE2QnVuF9ukRnhajouh4jh0xs9yB4mEy3mgcp4G4ONv1xDIdTNbVHai2FXj9jUBa1M0fFCM2qn67IH6eD9ERUnoE3bg7deTGTJfCkWZJaKgA4aIIdqNkj5GHwRUIMQJvwGwwLskdQufEyPbBONVm0TV481Bj6l4Hoh-eiHa';
 
   // Default center coordinates (Abu Dhabi area)
   private readonly defaultCenter: L.LatLngExpression = [24.4539, 54.3773];

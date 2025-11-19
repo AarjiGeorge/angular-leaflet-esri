@@ -1,6 +1,12 @@
 /* Import Leaflet CSS */
 @import 'leaflet/dist/leaflet.css';
 
+/* Import MapLibre GL CSS */
+@import 'maplibre-gl/dist/maplibre-gl.css';
+
+/* Import OpenLayers CSS */
+@import 'ol/ol.css';
+
 /* Global styles */
 * {
   margin: 0;

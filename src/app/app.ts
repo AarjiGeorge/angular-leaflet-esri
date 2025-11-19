@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { MapComponent } from './map/map.component';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [MapComponent],
+  imports: [RouterOutlet],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

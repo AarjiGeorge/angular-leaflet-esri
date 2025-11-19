@@ -1,0 +1,14 @@
+<div class="map-container">
+  <div class="nav-bar">
+    <a routerLink="/" class="nav-link">Leaflet + ESRI</a>
+    <a routerLink="/maplibre" class="nav-link">MapLibre GL</a>
+    <span class="nav-link active">OpenLayers</span>
+  </div>
+  <div id="openlayers-map" class="map"></div>
+
+  <!-- Popup overlay -->
+  <div id="ol-popup" class="ol-popup">
+    <a href="#" id="ol-popup-closer" class="ol-popup-closer" (click)="closePopup(); $event.preventDefault()"></a>
+    <div id="ol-popup-content"></div>
+  </div>
+</div>
