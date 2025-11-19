@@ -14,40 +14,38 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly esriMapServerUrl = 'https://geotrans.itc.gov.ae/server/rest/services/Basemaps/StreetMap_3857_Raster_Y_EN/MapServer';
   private readonly esriToken = 'OOAaWoN3772PFjfCsqBuYRfRIbajgQsJEE3HKznr73STKWx_9nKBbm27vfrQsI1rW-qxdJ7P4Whe17NXoGtQruRShshij09xMcwN01LAotc9S_6VlorCKAJIZjhQZaiRWBFKIknJWnBrUDM1qwZTFCq4vEOcGkftCWdkwzvWH1zoJkEOr_-HKPQK7lIb7Xtj';
 
-  // Custom tiling scheme from service metadata
-  private readonly tileInfo = {
-    origin: { x: -20037700, y: 30241100 },
-    tileSize: 256,
-    // LOD resolutions from service
-    lods: [
-      { level: 0, resolution: 1322.9193125052918 },
-      { level: 1, resolution: 793.7515875031751 },
-      { level: 2, resolution: 529.1677250021168 },
-      { level: 3, resolution: 396.87579375158754 },
-      { level: 4, resolution: 264.5838625010584 },
-      { level: 5, resolution: 158.75031750063502 },
-      { level: 6, resolution: 79.37515875031751 },
-      { level: 7, resolution: 39.687579375158755 },
-      { level: 8, resolution: 32.94069088138176 },
-      { level: 9, resolution: 26.458386250105836 },
-      { level: 10, resolution: 21.16670900008467 },
-      { level: 11, resolution: 15.875031750063501 },
-      { level: 12, resolution: 10.583354500042335 },
-      { level: 13, resolution: 7.9375158750317505 },
-      { level: 14, resolution: 5.291677250021167 },
-      { level: 15, resolution: 3.9687579375158752 },
-      { level: 16, resolution: 2.6458386250105836 },
-      { level: 17, resolution: 1.9843789687579376 },
-      { level: 18, resolution: 1.3229193125052918 },
-      { level: 19, resolution: 1.0583354500042335 },
-      { level: 20, resolution: 0.7937515875031751 },
-      { level: 21, resolution: 0.6614596562526459 },
-      { level: 22, resolution: 0.5291677250021167 },
-      { level: 23, resolution: 0.39687579375158755 },
-      { level: 24, resolution: 0.26458386250105836 },
-      { level: 25, resolution: 0.13229193125052918 }
-    ]
-  };
+  // LOD resolutions from service metadata
+  private readonly resolutions = [
+    1322.9193125052918,
+    793.7515875031751,
+    529.1677250021168,
+    396.87579375158754,
+    264.5838625010584,
+    158.75031750063502,
+    79.37515875031751,
+    39.687579375158755,
+    32.94069088138176,
+    26.458386250105836,
+    21.16670900008467,
+    15.875031750063501,
+    10.583354500042335,
+    7.9375158750317505,
+    5.291677250021167,
+    3.9687579375158752,
+    2.6458386250105836,
+    1.9843789687579376,
+    1.3229193125052918,
+    1.0583354500042335,
+    0.7937515875031751,
+    0.6614596562526459,
+    0.5291677250021167,
+    0.39687579375158755,
+    0.26458386250105836,
+    0.13229193125052918
+  ];
+
+  // ESRI tile origin
+  private readonly esriOrigin = { x: -20037700, y: 30241100 };
 
   // Default center coordinates (Abu Dhabi area)
   private readonly defaultCenter: L.LatLngExpression = [24.4539, 54.3773];
@@ -68,61 +66,45 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private initializeMap(): void {
-    // Create custom CRS with the service's resolutions
-    const resolutions = this.tileInfo.lods.map(lod => lod.resolution);
-
-    const customCRS = L.Util.extend({}, L.CRS.EPSG3857, {
-      scale: (zoom: number) => {
-        return 1 / resolutions[zoom];
-      },
-      zoom: (scale: number) => {
-        const res = 1 / scale;
-        for (let i = 0; i < resolutions.length - 1; i++) {
-          if (res >= resolutions[i]) {
-            return i;
-          }
-        }
-        return resolutions.length - 1;
-      }
-    });
-
-    // Create the map
+    // Create the map with standard CRS
     this.map = L.map('map', {
       center: this.defaultCenter,
       zoom: this.defaultZoom,
       zoomControl: true,
       minZoom: 0,
-      maxZoom: 25,
-      crs: customCRS
+      maxZoom: 25
     });
 
-    // Create custom tile layer for ESRI service with custom origin
+    // Create custom tile layer
     const serviceUrl = this.esriMapServerUrl;
     const serviceToken = this.esriToken;
+    const resolutions = this.resolutions;
+    const esriOrigin = this.esriOrigin;
+    const mapRef = this.map;
 
     const CustomEsriTileLayer = L.TileLayer.extend({
       getTileUrl: function(coords: L.Coords) {
         const zoom = coords.z;
-        const resolution = resolutions[zoom];
         const tileSize = 256;
 
-        // Convert Leaflet tile coords to ESRI tile coords using custom origin
-        const originX = -20037700;
-        const originY = 30241100;
-
-        // Get the tile extent in meters
+        // Get resolution for this zoom level
+        const resolution = resolutions[zoom] || resolutions[resolutions.length - 1];
         const tileExtent = tileSize * resolution;
 
-        // Convert Leaflet tile coordinates to world coordinates
-        const leafletOriginX = -20037508.342787;
-        const leafletOriginY = 20037508.342787;
+        // Get the NW corner of this tile in pixel coordinates
+        const nwPoint = coords.scaleBy(L.point(tileSize, tileSize));
 
-        const tileMinX = leafletOriginX + coords.x * tileExtent;
-        const tileMaxY = leafletOriginY - coords.y * tileExtent;
+        // Convert to lat/lng then to Web Mercator
+        const nwLatLng = mapRef.unproject(nwPoint, zoom);
 
-        // Convert to ESRI tile coordinates
-        const col = Math.floor((tileMinX - originX) / tileExtent);
-        const row = Math.floor((originY - tileMaxY) / tileExtent);
+        // Convert lat/lng to Web Mercator meters
+        const earthRadius = 6378137;
+        const x = nwLatLng.lng * Math.PI / 180 * earthRadius;
+        const y = Math.log(Math.tan((90 + nwLatLng.lat) * Math.PI / 360)) * earthRadius;
+
+        // Calculate ESRI tile row/col from Web Mercator coordinates
+        const col = Math.floor((x - esriOrigin.x) / tileExtent);
+        const row = Math.floor((esriOrigin.y - y) / tileExtent);
 
         return `${serviceUrl}/tile/${zoom}/${row}/${col}?token=${serviceToken}`;
       }
@@ -130,7 +112,8 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const esriLayer = new (CustomEsriTileLayer as any)(null, {
       attribution: 'Map data &copy; <a href="https://geotrans.itc.gov.ae">ITC GeoTrans</a>',
-      crossOrigin: 'anonymous'
+      crossOrigin: 'anonymous',
+      tileSize: 256
     });
 
     esriLayer.addTo(this.map);
