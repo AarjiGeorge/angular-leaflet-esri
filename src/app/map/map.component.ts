@@ -72,6 +72,33 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Create markers layer group and add to map
     this.markersLayer = L.layerGroup().addTo(this.map);
+
+    // Add initial markers
+    this.addInitialMarkers();
+  }
+
+  private addInitialMarkers(): void {
+    const points = [
+      { lat: 24.343996414082213, lng: 54.5183938857978 },
+      { lat: 24.39934657885083, lng: 54.51953626176326 },
+      { lat: 24.374956742038435, lng: 54.475590949263186 },
+      { lat: 24.368389443466242, lng: 54.54734540482967 }
+    ];
+
+    // Add markers for each point
+    points.forEach((point, index) => {
+      this.addMarkerWithPopup(
+        point.lat,
+        point.lng,
+        `<b>Point ${index + 1}</b><br>Lat: ${point.lat.toFixed(6)}<br>Lng: ${point.lng.toFixed(6)}`
+      );
+    });
+
+    // Fit map bounds to show all markers
+    if (points.length > 0) {
+      const bounds = L.latLngBounds(points.map(p => [p.lat, p.lng] as L.LatLngTuple));
+      this.map.fitBounds(bounds, { padding: [50, 50] });
+    }
   }
 
   // Get the markers layer group
