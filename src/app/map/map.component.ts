@@ -35,18 +35,25 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private initializeMap(): void {
-    // Create the map with standard Web Mercator CRS
+    // Create the map with constrained zoom levels to match service LODs
     this.map = L.map('map', {
       center: this.defaultCenter,
       zoom: this.defaultZoom,
       zoomControl: true,
-      minZoom: 1,
-      maxZoom: 20
+      minZoom: 3,
+      maxZoom: 18,
+      // Force integer zoom levels to match service LODs
+      zoomSnap: 1,
+      zoomDelta: 1
     });
 
     // Add ESRI Vector Tile Layer
     const vectorTileLayer = (esriVector as any).vectorTileLayer(this.esriVectorUrl, {
-      token: this.esriToken
+      token: this.esriToken,
+      // Fetch service style for better rendering
+      style: (style: any) => {
+        return style;
+      }
     });
 
     vectorTileLayer.addTo(this.map);
