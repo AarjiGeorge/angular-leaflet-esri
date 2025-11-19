@@ -12,8 +12,8 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   private map!: L.Map;
   private markersLayer!: L.LayerGroup;
 
-  // ESRI Service Configuration - Vector Tile Service
-  private readonly esriVectorUrl = 'https://geotrans.itc.gov.ae/server/rest/services/Hosted/StreetMap_3857_Vector_Y_EN/VectorTileServer';
+  // ESRI Service Configuration - Vector Tile Service (4326 version)
+  private readonly esriVectorUrl = 'https://geotrans.itc.gov.ae/server/rest/services/Hosted/StreetMap_4326_Vector_Y_EN/VectorTileServer';
   private readonly esriToken = 'OOAaWoN3772PFjfCsqBuYRfRIbajgQsJEE3HKznr73STKWx_9nKBbm27vfrQsI1rW-qxdJ7P4Whe17NXoGtQruRShshij09xMcwN01LAotc9S_6VlorCKAJIZjhQZaiRWBFKIknJWnBrUDM1qwZTFCq4vEOcGkftCWdkwzvWH1zoJkEOr_-HKPQK7lIb7Xtj';
 
   // Default center coordinates (Abu Dhabi area)
